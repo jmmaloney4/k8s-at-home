@@ -1,0 +1,71 @@
+# Default values for transmission-openvpn.
+
+image:
+  repository: haugene/transmission-openvpn
+  pullPolicy: IfNotPresent
+  
+strategy:
+  type: Recreate
+
+# Need this for VPN to work
+podSecurityContext:
+  privileged: true
+  capabilities:
+    add:
+      - NET_ADMIN
+
+# See more environment varaibles in the transmission-openvpn documentation
+# https://haugene.github.io/docker-transmission-openvpn/config-options/
+env: # {}
+  # TZ:
+  # I like Mullvad, but there's a large number of supported providers. See:
+  # https://haugene.github.io/docker-transmission-openvpn/supported-providers/
+  OPENVPN_PROVIDER: MULLVAD
+  OPENVPN_CONFIG: us_all
+  OPENVPN_USERNAME: "0000" # Mullvad Account Number. 
+  OPENVPN_PASSWORD: "m" # Mullvad OpenVPN password.
+
+  # Hide DNS traffic from your ISP by selecting a different DNS provider.
+  OVERRIDE_DNS_1: 10.8.0.1 # Only Avaliable via Mullvad. Other providers may have an equialent functionality.
+  OVERRIDE_DNS_2: 1.1.1.1 # Cloudflare 1.1.1.1 dns. 
+  # Other options:
+  # OpenDNS: 208.69.38.205
+  # Google: 8.8.8.8, 8.8.4.4
+
+  # https://haugene.github.io/docker-transmission-openvpn/config-options/#alternative_web_uis
+  TRANSMISSION_WEB_UI: kettu
+
+  # Transmission Configuration Options. Some examples shown below, See:
+  # https://haugene.github.io/docker-transmission-openvpn/config-options/#transmission_configuration_options
+  # https://github.com/transmission/transmission/wiki/Editing-Configuration-Files
+  TRANSMISSION_SPEED_LIMIT_UP_ENABLED: false
+  TRANSMISSION_SPEED_LIMIT_UP: 500 # KB/s
+  TRANSMISSION_SPEED_LIMIT_DOWN_ENABLED: false
+  TRANSMISSION_SPEED_LIMIT_DOWN: 5000
+
+service:
+  port:
+    port: 9091
+
+persistence:
+  data:
+    enabled: false
+    emptyDir: false
+    mountPath: /data
+    # skipuninstall: true
+    # storageClass: "-"
+    # accessMode: ReadWriteMany
+    # existingClaim: ""
+
+probes:
+  liveness:
+    enabled: true
+    custom: true
+    spec:
+      exec:
+        command:
+        - /etc/scripts/healthcheck.sh
+      initialDelaySeconds: 60
+      periodSeconds: 30
+  readiness:
+    enabled: false

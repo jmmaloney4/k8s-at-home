@@ -1,0 +1,19 @@
+apiVersion: v2
+appVersion: 3.3
+description: transmission-openvpn helm package
+name: transmission-openvpn
+version: 1.0.0
+keywords:
+  - transmission-openvpn
+home: https://github.com/k8s-at-home/charts/tree/master/charts/transmission-openvpn
+# icon: https://${CHARTNAME}.org/icon
+sources:
+  - https://github.com/haugene/docker-transmission-openvpn
+  - https://github.com/k8s-at-home/charts/tree/master/charts/transmission-openvpn
+maintainers:
+  - name: Jack Maloney
+    email: jmmaloney4@gmail.com
+dependencies:
+  - name: common
+    repository: https://k8s-at-home.com/charts/
+    version: 2.3.0
